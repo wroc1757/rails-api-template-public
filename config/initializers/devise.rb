@@ -317,7 +317,7 @@ end
 
 Devise.setup do |config|
   config.jwt do |jwt|
-    jwt.secret = ENV.fetch("DEVISE_JWT_SECRET_KEY")
+    jwt.secret = ENV.fetch("DEVISE_JWT_SECRET_KEY", "dummy_secret_for_build_only")
     jwt.dispatch_requests = [
       ["POST", %r{^/api/v1/users/sign_in$}]
     ]
