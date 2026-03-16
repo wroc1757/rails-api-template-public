@@ -1,6 +1,8 @@
-# Rails テンプレート セットアップガイド
+# Rails API Template
 
-## 概要
+Ruby on Rails による MVP 開発用テンプレートです。
+
+## 技術スタック
 
 | 項目 | 内容 |
 |---|---|
@@ -16,19 +18,24 @@
 
 1. GitHubで「Use this template」→ 新しいリポジトリを作成
 2. ローカルにclone
-3. アプリ名を一括置換（`config/application.rb` / `config/render.yaml` / `config/database.yml`）
-4. `rm config/credentials.yml.enc config/master.key && rails credentials:edit` で master.key を再生成
-5. `bundle install`
-6. `.env.development.sample` を `.env.development` にコピーして編集
-7. `bin/rails db:create db:migrate db:seed`
-8. `bin/rails server`
-
-## ローカル起動
+3. アプリ名を一括置換
+   - `config/application.rb` — モジュール名
+   - `config/render.yaml` — `<app-name>` を置換
+   - `config/database.yml` — DB名
+4. master.key を再生成
 ```bash
-cp .env.development.sample .env.development
-# DATABASE_URL を自分の環境に合わせて編集
-bin/rails db:create db:migrate db:seed
-bin/rails server
+   rm config/credentials.yml.enc
+   rails credentials:edit
+```
+5. 環境変数を設定
+```bash
+   cp .env.development.sample .env.development
+   # DATABASE_URL / DEVISE_JWT_SECRET_KEY を編集
+```
+6. DB作成・起動
+```bash
+   bin/rails db:create db:migrate db:seed
+   bin/rails server
 ```
 
 ## Renderデプロイ
@@ -45,27 +52,15 @@ bin/rails server
 | `R2_BUCKET` | バケット名 |
 | `R2_ENDPOINT` | `https://<account_id>.r2.cloudflarestorage.com` |
 
-## 認証
+## 認証エンドポイント
 ```
-Flutter  →  POST /api/v1/users/sign_in   →  JWT発行
-Flutter  →  DELETE /api/v1/users/sign_out →  JWTログアウト
-Flutter  →  POST /api/v1/users/sign_up   →  新規登録
-管理画面  →  /admin/sign_in              →  Session認証
-```
-
-## 管理画面の拡張
-```ruby
-# Admin::BaseController を継承するだけで認証が効く
-module Admin
-  class UsersController < BaseController
-    def index
-      @users = User.all
-    end
-  end
-end
+POST   /api/v1/users/sign_in    # ログイン（JWTを Authorization ヘッダで返す）
+DELETE /api/v1/users/sign_out   # ログアウト
+POST   /api/v1/users/sign_up    # 新規登録
+GET    /admin/sign_in           # 管理画面ログイン（Session認証）
 ```
 
 ## ヘルスチェック
 ```
-GET /up → 200 OK（緑画面）
+GET /up → 200 OK
 ```
